@@ -1,0 +1,119 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "2.0.0.0",
+    "parameters": {
+
+    },
+    "variables": {
+
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "name": "ARM-SA",
+            "location": "West US",
+            "apiVersion": "2015-06-15",
+            "properties": {"accountType": "Standard_LRS" }
+        },
+        {
+            "type": "Microsoft.Network/publicIPAddresses",
+            "name": "ARM-PI",
+            "location": "West US",
+            "apiVersion": "2015-06-15",
+            "properties": {
+                "publicIPAllocationMethod": "Dynamic",
+                "dnsSettings": {
+                    "domainNameLabel": "ARM"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks",
+            "name": "ARM-VN",
+            "location":"West US",
+            "apiVersion": "2015-06-15",
+            "properties": {
+                "addressSpace": {"addressPrefixes":["10.10.0.0/16"]},
+                "subnets":[
+                    {
+                        "name": "ARM-SB1",
+                        "properties":{"addressPrefix": "10.10.0.0/24"}
+                    },
+                    {
+                        "name": "ARM-SB2",
+                        "properties":{"addressPrefix": "10.10.0.0/24"}
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/networkInterfaces",
+            "name": "ARM-NIC",
+            "location":"West US",
+            "apiVersion": "2015-06-15",
+            "dependsOn": ["Microsoft.Network/virtualNetworks/ARM-VN"],
+            "properties": {
+                "ipConfigurations":[
+                    {
+                    "name": "ARM-VN-IP",
+                    "properties":{
+                        "privateIPAllocationMethod":"Dynamic",
+                        "publicIPAddress":{"id": "[resourceId('Microsoft.Network/PublicIPAddresss','ARM-IP')]"},
+                            "subnet":{"id": "[concat(resourceId('Microsoft.Network/virtualNetworks','ARM-VN'),'/subnets/ARM-SB1')]"}
+                    }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Compute/virtualMachines",
+            "name": "ARM-VM1",
+            "location":"West US",
+            "apiVersion": "2017-03-30",
+            "dependsOn": ["Microsoft.Storage/storageAcounts/ARM-SA","Microsoft.Network/networkInterfaces/ARM-NIC"],
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "Standard_A2"
+                },
+                "osProfile": {
+                    "computerName": "ARM-VM1",
+                    "adminUsername": "arm-admin",
+                    "adminPassword": "arm-password"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "MicrosoftWindowsServer",
+                        "offer": "WindowsServer",
+                        "sku": "2016-Datacenter",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "createOption": "FromImage"
+                    },
+                    "dataDisks": [
+                        {
+                            "diskSizeGB": 1023,
+                            "lun": 0,
+                            "createOption": "Empty"
+                        }
+                    ]
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces','ARM-NIC')]"
+                        }
+                    ]
+                },
+                "diagnosticsProfile": {
+                    "bootDiagnostics": {
+                        "enabled": true,
+                        "storageUri": "[reference(resourceId('Microsoft.Storage/storageAccounts/', 'ARM-SA')).primaryEndpoints.blob]"
+                    }
+                }
+            }
+        }
+
+    ],
+    "outputs": {}
+}
