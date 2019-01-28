@@ -38,10 +38,6 @@
                     {
                         "name": "ARM-SB1",
                         "properties":{"addressPrefix": "10.10.0.0/24"}
-                    },
-                    {
-                        "name": "ARM-SB2",
-                        "properties":{"addressPrefix": "10.10.0.0/24"}
                     }
                 ]
             }
