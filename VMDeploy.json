@@ -10,7 +10,7 @@
     "resources": [
         {
             "type": "Microsoft.Storage/storageAccounts",
-            "name": "ARM-SA",
+            "name": "pocarmsa001",
             "location": "West US",
             "apiVersion": "2015-06-15",
             "properties": {"accountType": "Standard_LRS" }
@@ -23,7 +23,7 @@
             "properties": {
                 "publicIPAllocationMethod": "Dynamic",
                 "dnsSettings": {
-                    "domainNameLabel": "ARM"
+                    "domainNameLabel": "pocarmdomainnamelabel001"
                 }
             }
         },
@@ -70,7 +70,10 @@
             "name": "ARM-VM1",
             "location":"West US",
             "apiVersion": "2017-03-30",
-            "dependsOn": ["Microsoft.Storage/storageAcounts/ARM-SA","Microsoft.Network/networkInterfaces/ARM-NIC"],
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts/', 'pocarmsa001')]",
+                "[resourceId('Microsoft.Network/networkInterfaces/', 'ARM-NIC')]"
+            ],
             "properties": {
                 "hardwareProfile": {
                     "vmSize": "Standard_A2"
@@ -78,7 +81,7 @@
                 "osProfile": {
                     "computerName": "ARM-VM1",
                     "adminUsername": "arm-admin",
-                    "adminPassword": "arm-password"
+                    "adminPassword": "pocarm-password@001"
                 },
                 "storageProfile": {
                     "imageReference": {
@@ -108,7 +111,7 @@
                 "diagnosticsProfile": {
                     "bootDiagnostics": {
                         "enabled": true,
-                        "storageUri": "[reference(resourceId('Microsoft.Storage/storageAccounts/', 'ARM-SA')).primaryEndpoints.blob]"
+                        "storageUri": "[reference(resourceId('Microsoft.Storage/storageAccounts/', 'pocarmsa001')).primaryEndpoints.blob]"
                     }
                 }
             }
