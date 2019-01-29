@@ -28,6 +28,44 @@
             }
         },
         {
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "name": "ARM-NSG",
+            "apiVersion": "2015-06-15",
+            "location":"West US",
+            "properties": {
+                "securityRules":[
+                    {
+                        "name": "rule_001",
+                        "properties":{
+                            "description": "Allow RDP",
+                            "access":"Allow",
+                            "priority":1000,
+                            "direction":"Inbound",
+                            "protocol":"*",
+                            "sourceAddressPrefix": "*",
+                            "sourcePortRange": "*",
+                            "destinationAddressPrefix": "*",
+                            "destinationPortRange": "3389"
+                        }
+                    },
+                    {
+                        "name": "rule_002",
+                        "properties":{
+                            "description": "Allow SSH",
+                            "access":"Allow",
+                            "priority":1001,
+                            "direction":"Inbound",
+                            "protocol":"*",
+                            "sourceAddressPrefix": "*",
+                            "sourcePortRange": "*",
+                            "destinationAddressPrefix": "*",
+                            "destinationPortRange": "22"
+                        }
+                    }
+                ]
+            }
+        },
+        {
             "type": "Microsoft.Network/virtualNetworks",
             "name": "ARM-VN",
             "location":"West US",
@@ -37,20 +75,15 @@
                 "subnets":[
                     {
                         "name": "ARM-SB1",
-                        "properties":{"addressPrefix": "10.10.0.0/24"}
+                        "properties":{"addressPrefix": "10.10.0.0/24"},
+                        "networkSecurityGroup":{
+                            "id":"[resourceId('Microsoft.Network/networkSecurityGroups','ARM-NSG')]"
+                        }
                     }
                 ]
             }
         },
-        {
-            "type": "Microsoft.Network/networkSecurityGroups",
-            "name": "ARM-NSG",
-            "apiVersion": "2015-06-15",
-            "location":"West US",
-            "properties": {
-                "securityRules":[]
-            }
-        },
+      
         {
             "type": "Microsoft.Network/networkInterfaces",
             "name": "ARM-NIC",
@@ -101,7 +134,7 @@
                     },
                     "dataDisks": [
                         {
-                            "diskSizeGB": 1023,
+                            "diskSizeGB": 50,
                             "lun": 0,
                             "createOption": "Empty"
                         }
