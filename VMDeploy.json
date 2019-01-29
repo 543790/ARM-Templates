@@ -43,11 +43,20 @@
             }
         },
         {
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "name": "ARM-NSG",
+            "apiVersion": "2015-06-15",
+            "location":"West US",
+            "properties": {
+                "securityRules":[]
+            }
+        },
+        {
             "type": "Microsoft.Network/networkInterfaces",
             "name": "ARM-NIC",
             "location":"West US",
             "apiVersion": "2015-06-15",
-            "dependsOn": ["Microsoft.Network/virtualNetworks/ARM-VN"],
+            "dependsOn": ["[resourceId('Microsoft.Network/virtualNetworks/','ARM-VN')]"],
             "properties": {
                 "ipConfigurations":[
                     {
