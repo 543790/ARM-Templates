@@ -89,7 +89,8 @@
             "name": "ARM-NIC",
             "location":"West US",
             "apiVersion": "2015-06-15",
-            "dependsOn": ["[resourceId('Microsoft.Network/virtualNetworks/','ARM-VN')]"],
+            "dependsOn": ["[resourceId('Microsoft.Network/virtualNetworks/','ARM-VN')]",
+            "[resourceId('Microsoft.Network/publicIPAddresses/','ARM-PI')]"],
             "properties": {
                 "networkSecurityGroup":{"id": "[resourceId('Microsoft.Network/networkSecurityGroups/','ARM-NSG')]"},
                 "ipConfigurations":[
@@ -97,8 +98,8 @@
                     "name": "ARM-VN-IP",
                     "properties":{
                         "privateIPAllocationMethod":"Dynamic",
-                        "publicIPAddress":{"id": "[resourceId('Microsoft.Network/PublicIPAddresss','ARM-IP')]"},
-                            "subnet":{"id": "[concat(resourceId('Microsoft.Network/virtualNetworks','ARM-VN'),'/subnets/ARM-SB1')]"}
+                        "publicIPAddress":{"id": "[resourceId('Microsoft.Network/publicIPAddresses/','ARM-PI')]"},
+                            "subnet":{"id": "[concat(resourceId('Microsoft.Network/virtualNetworks/','ARM-VN'),'/subnets/ARM-SB1')]"}
                     }
                     }
                 ]
@@ -150,7 +151,7 @@
                 "diagnosticsProfile": {
                     "bootDiagnostics": {
                         "enabled": true,
-                        "storageUri": "[reference(resourceId('Microsoft.Storage/storageAccounts/', 'pocarmsa001')).primaryEndpoints.blob]"
+                        "storageUri": "[concat(reference(concat('Microsoft.Storage/storageAccounts/', 'pocarmsa001'),'2015-06-15').primaryEndpoints.blob)]"
                     }
                 }
             }
